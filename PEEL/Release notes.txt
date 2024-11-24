@@ -1,0 +1,184 @@
+PEEL Release Notes
+==================
+
+PEEL was created by Pierre Terdiman (author of Opcode, co-author of NovodeX, senior software engineer for PhysX).
+
+Contact email: pierre.terdiman@gmail.com   <= use this first
+               pierre@codercorner.com      <= use this the day the first one becomes obsolete
+
+* January 2017: v1.1 - the PhysX 3.4 issue.
+
+	This new version celebrates the official release of PhysX 3.4 and its built-in support for GPU rigid bodies.
+	There is now a "Use GPU" checkbox in the PhysX 3.4's options panel. Just check that box to run the scenes
+	on the GPU. It uses CUDA, so you need an Nvidia graphics card for this to work - and a recent one for good
+	performance. Otherwise the regular CPU version is of course still the default, and it runs everywhere.
+
+	Many changes have been made over the last two years. Some of them are listed below:
+
+	- PEEL app:
+		- implemented smoother camera motion (when using cursor keys).
+		- added support for prismatic joint limits.
+		- added support for distance joints (only exposed in PhysX so far).
+		- added support for cylinder shapes.
+		- added support for articulations (PhysX).
+		- added support for aggregates (PhysX). This improves performance of ragdoll scenes quite a bit.
+		- added initial/experimental support for vehicles.
+		- various test scenes have been added or revisited.
+		- introduced support for configurable tests (per-test UI dialog). As a result, some similar-looking
+		tests have been merged together.
+		- added tool-specific UI to edit tool-specific parameters. For example the picking force can now
+		be modified in the main UI.
+		- added camera tracking tool.
+		- added support for per-test keyboard controls etc.
+		- improved wireframe overlay rendering ('X' key). Now enabled by default.
+		- new Pint caps have been added, as well as comments explaining their role better.
+		- new test categories have been added.
+		- tests can now access the font renderer to draw some debug text on screen. See for example the
+		"AngularVelocity" test in the API category.
+		- tests can now access the debug renderer to draw some debug data on screen. See for example the
+		"COMLocalOffset" test in the API category.
+		- replaced "ComputeWorldRay" with its ICE counterpart to fix some accuracy & performance issues
+		in the raytracing test. The raytracing test became an order of magnitude faster after that.
+	- Stats plugin:
+		- now displays gravity vector.
+		- added support for articulations & aggregates.
+	- Bullet:
+		- added new PINT plugin for "Bullet3-2.85.1" (from Oct 15, 2016).
+		- Bullet3-2.85.1: exposed more solver settings to the UI for this version. I also set the default
+		"erp" value to 0.8 for this plugin, which improves the behavior a lot in jointed scenes like for
+		example FixedJointsTorusStressTest. In previous Bullet plugins however I kept Bullet's own default
+		value (0.2) because increasing it to 0.8 creates "dancing stacks" (see e.g. LargeBoxStack30).
+		- Bullet3-2.85.1: for this version I used 4 solver iterations by default, since this is what PEEL
+		also uses for other physics engines. It should then be a little bit faster than before, since we
+		used 5 iterations by default in the previous Bullet plugins (2.79 to 2.82). However I noticed
+		that Bullet's own default value is now 10 iterations. Not sure if this is really necessary. Play
+		with the settings until you find a good compromise.
+		- constraints are now properly released.
+		- collision margin has been reduced. That way the ConvexStack2 test doesn't explode anymore.
+		- support for cylinders has been added.
+	- Newton:
+		- Newton's PINT plugin has been revisited by Julio Jerez.
+		- sleeping can now be deactivated (except in 3.14).
+		- the per-test gravity vector is now taken into account (it was previously ignored).
+		- we can now use Newton 3.9 and 3.13 at the same time: I just switched to static libs for 3.13.
+		- the 3.13 libraries have been updated. It is now using the stable version from Jun 17, 2015.
+		- added new PINT plugin for Newton 3.12 (from May 24, 2015).
+		- added new PINT plugin for Newton 3.14 (trunk from Jan 3, 2017).
+	- Havok:
+		- better tracking of memory usage.
+		- started to share code between all Havok plugins.
+		- exposed more parameters to UI.
+		- initial (incomplete) support for "articulations". Currently disabled because it crashes in
+		some scenes.
+		- support for cylinders has been added.
+		- support for kinematics has been enabled in old versions of Havok.
+		- free versions of Havok are not available anymore (see https://www.havok.com/pcxs_redirect/) so
+		I will not be able to add and test newer versions in PEEL.
+	- PhysX 3.x:
+		- the UI has been unified for all 3.x PINT plugins except 3.1.
+		- new parameters have been exposed to the UI.
+		- default contact offset value has been increased (decreasing performance here and there but
+		otherwise increasing stability).
+		- max angular velocity has been properly setup to a higher value in all PhysX plugins. The default
+		value in PhysX is quite small, which makes some tests fail and perhaps give the wrong impressions.
+		- added some quick preconfigured settings to tweak PhysX for either performance or accuracy.
+		- the PhysX allocator (on the PINT side) is now thread-safe.
+	- PhysX 3.4:
+		- the PCM regression (in PEEL 1.01) has been fixed.
+		- the overlap/sweep performance regressions (in PEEL 1.01) have been fixed.
+		- the 3.4 architecture has changed significantly since the PEEL 1.01 version, to make the code
+		compatible with GPU rigid bodies.
+
+---
+
+* 2016: v1.02 - the internal issue.
+
+	Versions 1.02 and more have been used internally for a year while working on PhysX 3.4, but they were
+	never released to the public.
+
+---
+
+* april 2015: v1.01 - the Bullet single-triangle-mesh issue.
+
+	- the Bullet plugin was crashing or behaving oddly in all scenes featuring the "single triangle" mesh.
+	This has been fixed. The reason was that the triangle's data was not persistent (contrary to what happens
+	for other meshes), and since Bullet does not copy the data, bad things happened. It looks like all the
+	other engines copy the data, since they were working fine. Thanks to Erwin Coumans for figuring out the
+	root of the problem.
+
+	- Opcode2 plugins will not crash anymore in raycast scenes without meshes (they won't do anything though).
+
+---
+
+* april 2015: v1.0 - first public version.
+
+	- PINT_Bullet was my initial Bullet PEEL plugin, for version 2.79. It will be deprecated soon, since it
+	seems old and irrelevant now.
+
+	- the Bullet 2.81 plugin is the one which was used for my "evolution of PhysX" blog post. As I reported on
+	the Bullet forums at the time, the optimizations settings shipped with the library seem sub-optimal. In the
+	provided build, I modified the Visual Studio settings to produce a faster version (it is using the same
+	settings as what we use for PhysX).
+
+	- the Bullet 2.82 plugin uses Bullet's own optimization settings (as shipped). This is a great way to show
+	what PEEL is about, since you can run both 2.81 and 2.82 versions in the tool, and easily see the performance
+	difference between the two builds.
+
+	- the various Havok PEEL plugins are provided as source code only. The Havok license is unclear to me but I think
+	I am not supposed to redistribute either their libraries, or even a binary PEEL plugin like I can do with Bullet.
+	It should be ok to release the source code for the Havok PEEL plugin though, since PAL did the same a long time
+	before me. People interested in the results should be able to download the Havok libraries and recompile the
+	plugins themselves.
+
+	- ICE Physics is a very old physics engine that I wrote before joining NovodeX (so, maybe around 2002). It does
+	not even support joints or convex objects. However I think it still kicks ass for basic rigid body simulation
+	of simple objects. In fact, it may still have the best box stacks in the business. Super stable, super fast.
+	PEEL it and see for yourself. Only the binary PEEL plugin is provided.
+
+	- the PEEL plugin for Newton 3.9 was written by Julio Jerez. It is currently quite incomplete (sleeping is never
+	deactivated, object deletion is not implemented, CCD is not implemented, overlaps and sweeps are not implemented,
+	etc) but I am including it nonetheless, since Newton is quite competitive and worth keeping an eye on.
+
+	- I adapted Julio's plugin for Newton 3.13. This was a straight port, a couple of functions changed but otherwise
+	it is the same as 3.9. Unfortunately I don't know how to use both Newton plugins at the same time in PEEL, since
+	they both use the same DLLs (e.g. 'newton.dll'). I would have to use delay-loading to replicate the same trick as
+	for PhysX, but I didn't have time to try it yet. Meanwhile, recompile the desired Newton plugin each time you want
+	to use it. That should copy the proper Newton DLLs to PEEL's build folder.
+
+	- the PEEL plugin for NovodeX 2.1.1 is provided as source code just in case anybody is interested, but it is
+	terribly obsolete at this point. I haven't compiled it myself in ages.
+
+	- the Opcode 1.3 plugin is an interesting case. First, it shows that PEEL can also deal with collision libraries
+	(as opposed to full blown physics engines). And second, it shows that the venerable, 10+ years old, non-SIMD
+	library, is *still* quite competitive today. In some cases it remains faster than a number of other, more recent
+	implementations.
+
+	- the Opcode 2.0 plugins (only provided as binary for now) show what a revisited, modern version of Opcode can do.
+	So far it pretty much beats everything else. Very proud of that one. There are a number of compile options for
+	Opcode 2.0, and 2 different plugins are provided, using 2 different mesh formats. One of them is better for
+	raycasts, the other one better for overlap queries & memory usage. PEEL is a great way to analyze and track the
+	performance differences between the formats.
+
+	- the various PhysX plugins were the reason I wrote PEEL in the first place: tracking the evolution of PhysX and
+	making sure each new version was better than the last. See for yourself. The PhysX binary DLLs are included, courtesy
+	of NVIDIA. Providing the binaries should be convenient for users: the delay loading mechanism requires that the
+	DLL names are modified for each PhysX version, so that they can all be in the same folder and used in the same app.
+	This is not obvious and slightly uncommon, so it is good if users do not have to do that themselves. In any case
+	you should be able to create a new PhysX PEEL plugin for another version, if the included ones are not enough.
+	
+	- a plugin for PhysX 3.4 is included, even though this version has not been shipped yet. PhysX 3.4 will include an
+	Opcode2-based mesh format, so you can see a preview of things to come here. Expect performance gains in raycasts,
+	overlaps, and sweeps! On the other hand, at time of writing there is a known performance regression in convex
+	sweeps, and a bug in the PCM contact generation. Both have been spotted thanks to PEEL!
+	
+	- PINT_Skeleton is an empty plugin project. Use this to create a PEEL plugin for your own physics engine.
+	Improve your engine today! Take the PEEL test! (100% of people who did that so far discovered things they did not
+	know about their engine, and improved its performance as a result).
+
+	- please report bugs or improvements to existing plugins (in particular Bullet, Newton, Havok). I will hopefully
+	integrate them in the next version of PEEL.
+
+
+* 2012-2015: various PhysX internal versions
+
+
